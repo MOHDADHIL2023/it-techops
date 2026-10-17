@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>I.T. TechOps · Enterprise IT Operations</title>
+    <meta name="description" content="I.T. TechOps: Enterprise IT Operations Management Application tailored for IT Support Specialists featuring incident management, SLA tracking, asset baselines, and IT Helpdesk diagnostic intelligence." />
+    <meta property="og:title" content="I.T. TechOps · Enterprise IT Operations" />
+    <meta property="og:description" content="I.T. TechOps: Enterprise IT Operations Management Application tailored for IT Support Specialists featuring incident management, SLA tracking, asset baselines, and IT Helpdesk diagnostic intelligence." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      // Gracefully prevent unhandled promise rejections or errors from Vite dev-server WebSocket reconnection attempts
+      window.addEventListener('unhandledrejection', function(event) {
+        var reason = event.reason;
+        var msg = (reason && (reason.message || reason.stack || String(reason))) || '';
+        if (msg.toLowerCase().includes('websocket') || (reason && reason.name === 'WebSocket')) {
+          event.preventDefault();
+          event.stopPropagation();
+          console.warn('[Vite WebSocket] Notice handled gracefully:', msg);
+        }
+      });
+      window.addEventListener('error', function(event) {
+        var msg = (event.message || event.filename || '') + '';
+        if (msg.toLowerCase().includes('websocket')) {
+          event.preventDefault();
+          event.stopPropagation();
+          console.warn('[Vite WebSocket] Connection notice handled gracefully.');
+        }
+      });
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#f8fafc] text-slate-900 antialiased selection:bg-blue-100 selection:text-blue-900 min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

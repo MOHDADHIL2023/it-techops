@@ -1,0 +1,6 @@
+{
+  "name": "TechOps Command",
+  "description": "Enterprise IT Operations Management Application tailored for IT Support Specialists featuring incident management, SLA tracking, asset baselines, and interactive diagnostic trees.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
