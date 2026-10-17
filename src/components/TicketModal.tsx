@@ -17,7 +17,8 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-  Check
+  Check,
+  Headphones
 } from 'lucide-react';
 import { IncidentTicket, PriorityLevel, TicketStatus, TicketCategory, AssetRecord } from '../types';
 import { calculateTicketSla } from '../utils/slaCalculator';
@@ -186,7 +187,7 @@ Valid priorities: "Critical" | "High" | "Medium" | "Low"`
             timestamp: new Date().toISOString(),
             author: assignedTo,
             action: 'Ticket Created',
-            note: 'Incident logged manually in TechOps Command.',
+            note: 'Incident logged manually in I.T. TechOps.',
           },
         ],
       };
@@ -680,8 +681,8 @@ Valid priorities: "Critical" | "High" | "Medium" | "Low"`
                 }}
                 className="px-3 py-2 bg-blue-950 hover:bg-blue-900 text-emerald-300 text-xs font-bold border border-emerald-500/50 rounded-none cursor-pointer flex items-center space-x-1.5"
               >
-                <Bot className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Ask AI Agent for RCA & Fix</span>
+                <Headphones className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Ask IT Helpdesk for RCA & Fix</span>
               </button>
             )}
           </div>

@@ -42,7 +42,7 @@ export const SUGGESTION_PLAYBOOKS: SuggestionPlaybook[] = [
     department: 'SecOps',
     escalationTier: 'Tier 2 SysOps',
     title: 'Intermittent packet drops (>15%) & latency spike across GlobalProtect VPN gateway',
-    description: 'Remote staff reporting recurrent VPN disconnections and high terminal jitter (260ms). MTR trace isolates packet drops between upstream Tier-1 carrier Lumen and Frankfurt DE-CIX peering exchange.',
+    description: 'Remote staff reporting recurrent VPN disconnections and high terminal jitter (260ms). MTR trace isolates packet drops between primary Tier-1 carrier e& / du transit and UAE IX / SmartHub peering exchange.',
     rootCause: 'Upstream transit BGP route flapping with primary Tier-1 peering provider.',
     resolutionNotes: 'Applied BGP path prepend on firewall FW-PRIMARY to force symmetric routing over secondary Cogent WAN link.',
     recommendedSlaMinutes: 120,

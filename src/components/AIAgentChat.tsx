@@ -65,7 +65,7 @@ function generateInstantFallback(query: string, assets: AssetRecord[]): string {
     q.includes('hazard')
   ) {
     return `### Root Cause & Impact Assessment: Hazardous Lithium-Ion Battery Swelling (AST-WKS-104)
-**Affected Asset:** AST-WKS-104 (Lenovo ThinkPad P16 Gen 2 · CFO Financial Workstation)  
+**Affected Asset:** AST-WKS-104 (Lenovo ThinkPad P16 Gen 2 · CFO Financial Workstation, Executive Suite - Office 402, DIFC Gate Tower, Dubai UAE)  
 **Risk Severity:** Critical (Class 9 Hazmat & Thermal Runaway Hazard)  
 **Root Cause:** Lithium-ion pouch cell degradation leading to electrolyte decomposition, gas generation, and mechanical chassis deformation. The swollen cell exerts upward pressure against the trackpad and internal keyboard assembly.
 
@@ -80,13 +80,13 @@ function generateInstantFallback(query: string, assets: AssetRecord[]): string {
    - Do **NOT** puncture, bend, or apply tools to the battery enclosure.
    - Move the workstation to a fire-retardant storage area (Class D / Li-Ion fire containment bag or metal safe on a non-flammable surface).
    - Ensure an ABC dry chemical or Lith-Ex fire extinguisher is accessible in the staging room.
-3. **Transportation Warning:** Under IATA / DOT Title 49 CFR regulations, swollen lithium-ion batteries are strictly **prohibited on commercial passenger aircraft**.
+3. **Transportation Warning:** Under IATA / UAE GCAA regulations, swollen lithium-ion batteries are strictly **prohibited on commercial passenger aircraft**.
 
 ---
 
 ### Phase 2: Asset Replacement & Executive User Continuity Steps
 1. **Loaner Provisioning:**
-   - Deploy emergency executive loaner workstation from the IT Staging Safe (AST-WKS-105 or pre-imaged Dell Precision 5680).
+   - Deploy emergency executive loaner workstation from the Dubai IT Staging Safe (AST-WKS-105 or pre-imaged Dell Precision 5680).
    - Enroll via Microsoft Entune Autopilot with CFO profile tags.
 2. **Data Recovery & Identity Access:**
    - Retrieve BitLocker Recovery Key from Active Directory DC01 or Microsoft Entra ID.
@@ -101,12 +101,12 @@ function generateInstantFallback(query: string, assets: AssetRecord[]): string {
 1. **Check Warranty & Contract Status:**
    - Asset AST-WKS-104 is enrolled under **Lenovo Premier Support Plus (Warranty active through 2026-10-30)** with Accidental Damage Protection (ADP) and Sealed Battery Warranty extension.
 2. **Submit Priority Service Ticket:**
-   - Log into **Lenovo Enterprise Service Portal (eSupport)** or call dedicated Premier Support hotline (1-855-669-3378).
+   - Log into **Lenovo Enterprise Service Portal (eSupport)** or call dedicated Premier Support UAE hotline.
    - Provide Machine Type Model: \`21FA-0025US\` and System Serial Number (retrieve via command below).
    - Problem Classification: *"Hardware - Battery Physical Deformation / Thermal Hazard (CRU/FRU Replacement Required)"*.
 3. **Dispatch & Battery Disposal Logistics:**
-   - Request **Next Business Day (NBD) On-Site Technician** with replacement Lenovo OEM 94Wh Battery FRU (Part # 5B10W51871 / 5B10W51872).
-   - Technician will extract and remove the defective pouch in compliance with EPA Universal Waste guidelines.
+   - Request **Next Business Day (NBD) On-Site Technician** dispatch to DIFC Gate Tower, Dubai UAE with replacement Lenovo OEM 94Wh Battery FRU (Part # 5B10W51871 / 5B10W51872).
+   - Technician will extract and remove the defective pouch in compliance with Dubai Municipality environmental directives and certified UAE e-waste recycling standards (EnviroServe Dubai).
 
 ---
 
@@ -157,6 +157,38 @@ SELECT pg_cancel_backend(84102);
 #### Post-Incident Hardening
 - Create required index: \`CREATE INDEX CONCURRENTLY idx_gl_postings_acc ON general_ledger_postings(account_id, posting_date);\`
 - Set \`statement_timeout = '60s'\` in postgresql.conf to avoid cascading locks.`;
+  }
+
+  if (q.includes('dubai') || q.includes('uae') || q.includes('location') || q.includes('datacenter') || q.includes('data center') || q.includes('carrier') || q.includes('transit')) {
+    return `### I.T. TechOps Regional Infrastructure Architecture: Dubai, UAE Hub
+**Primary Operations Region:** Dubai, United Arab Emirates (UAE)  
+**Timezone:** Gulf Standard Time (GST · UTC+04:00, no daylight savings)  
+**Active Site Classification:** Tier-3 Enterprise Production Datacenter & Regional NOC  
+
+---
+
+#### 1. Regional Physical Datacenter Topology:
+- **Primary Production Datacenter:** Equinix DX1 / Dubai Internet City DC-1 (DIC), Dubai UAE.
+  - Housing Active Directory DC01 (\`AST-SRV-001\`), Edge Firewall HA Pair (\`AST-NET-014\`), and Pure Storage 325TB FC FlashArray (\`AST-STO-088\`).
+- **Secondary Regional Hub:** Dubai Silicon Oasis Tech Park (DSO), housing Production SAP ERP PostgreSQL Database Cluster (\`AST-DB-003\`).
+- **Regional Corporate Headquarters:** DIFC Gate Tower (Office 402 Executive Suite), Dubai UAE.
+- **Support Operations Center:** Business Bay Facility (Station 12), Dubai UAE.
+
+#### 2. Carrier Transit & Network Redundancy:
+- **Primary Tier-1 Transit:** Dual redundant dark fiber rings powered by **e& (Etisalat by e&)** and **du**.
+- **Peering & IX:** Connected via UAE-IX / SmartHub for sub-5ms regional Middle East latency.
+- **Edge Security:** Palo Alto Networks PA-3420 active-standby cluster with dynamic BGP failover.
+
+#### 3. Disaster Recovery & Cloud Integration:
+- **Designated DR Site:** Abu Dhabi Kizad Standby Datacenter AZ-2 (Hot-standby WAL streaming and Active Directory DFS-R).
+- **Public Cloud Region:** AWS Middle East (UAE - Dubai \`me-central-1\`), with secondary failover to AWS Bahrain (\`me-south-1\`).
+
+#### 4. Compliance & Regulatory Frameworks:
+- **UAE TDRA** (Telecommunications and Digital Government Regulatory Authority) compliance.
+- **NESA UAE Information Assurance Standard (IAS)** tier compliance.
+    // 4. Compliance & Regulatory Frameworks:
+    // ...
+    Hazardous electronics and Li-ion battery recycling certified by Dubai Municipality & EnviroServe UAE in Dubai Industrial City.`;
   }
 
   return `### I.T. TechOps Diagnostic Analysis & Problem-Solving Assessment

@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
+import { WebSocketServer, WebSocket } from 'ws';
 
 dotenv.config();
 
@@ -194,6 +195,37 @@ klist purge
 - Add originating threat ASN to perimeter WAF blocklist.`;
     }
 
+    // Scenario 5: Dubai UAE / Regional Location Infrastructure
+    if (q.includes('dubai') || q.includes('uae') || q.includes('location') || q.includes('datacenter') || q.includes('data center') || q.includes('carrier') || q.includes('transit')) {
+      return `### I.T. TechOps Regional Infrastructure Architecture: Dubai, UAE Hub
+**Primary Operations Region:** Dubai, United Arab Emirates (UAE)  
+**Timezone:** Gulf Standard Time (GST · UTC+04:00, no daylight savings)  
+**Active Site Classification:** Tier-3 Enterprise Production Datacenter & Regional NOC  
+
+---
+
+#### 1. Regional Physical Datacenter Topology:
+- **Primary Production Datacenter:** Equinix DX1 / Dubai Internet City DC-1 (DIC), Dubai UAE.
+  - Housing Active Directory DC01 (\`AST-SRV-001\`), Edge Firewall HA Pair (\`AST-NET-014\`), and Pure Storage 325TB FC FlashArray (\`AST-STO-088\`).
+- **Secondary Regional Hub:** Dubai Silicon Oasis Tech Park (DSO), housing Production SAP ERP PostgreSQL Database Cluster (\`AST-DB-003\`).
+- **Regional Corporate Headquarters:** DIFC Gate Tower (Office 402 Executive Suite), Dubai UAE.
+- **Support Operations Center:** Business Bay Facility (Station 12), Dubai UAE.
+
+#### 2. Carrier Transit & Network Redundancy:
+- **Primary Tier-1 Transit:** Dual redundant dark fiber rings powered by **e& (Etisalat by e&)** and **du**.
+- **Peering & IX:** Connected via UAE-IX / SmartHub for sub-5ms regional Middle East latency.
+- **Edge Security:** Palo Alto Networks PA-3420 active-standby cluster with dynamic BGP failover.
+
+#### 3. Disaster Recovery & Cloud Integration:
+- **Designated DR Site:** Abu Dhabi Kizad Standby Datacenter AZ-2 (Hot-standby WAL streaming and Active Directory DFS-R).
+- **Public Cloud Region:** AWS Middle East (UAE - Dubai \`me-central-1\`), with secondary failover to AWS Bahrain (\`me-south-1\`).
+
+#### 4. Compliance & Regulatory Frameworks:
+- **UAE TDRA** (Telecommunications and Digital Government Regulatory Authority) compliance.
+- **NESA UAE Information Assurance Standard (IAS)** tier compliance.
+- Hazardous electronics and Li-ion battery recycling certified by Dubai Municipality & EnviroServe UAE in Dubai Industrial City.`;
+    }
+
     // Default intelligent triage
     return `### I.T. TechOps Diagnostic Analysis & Problem-Solving Assessment
 **Analysis of Request:** "${query}"
@@ -246,17 +278,27 @@ If this issue is actively impacting users, use the **"Log Incident Ticket"** mod
         }
       }
 
-      const systemInstruction = `You are the I.T. TechOps IT Helpdesk, a principal Enterprise IT Systems Architect and Tier-3 Infrastructure & Security Operations Specialist.
+      const systemInstruction = `You are the I.T. TechOps IT Helpdesk, a principal Enterprise IT Systems Architect and Tier-3 Infrastructure & Security Operations Specialist for our primary operations hub in Dubai, United Arab Emirates (UAE).
 Your primary role is assisting IT Support Specialists with rapid problem-solving, root-cause analysis (RCA), diagnostic command generation, and step-by-step remediation procedures.
 
-The organizational environment contains:
-- Primary Active Directory DC01 (10.240.10.11, Windows Server 2022)
-- Edge Perimeter Firewall HA (Palo Alto PA-3420, PAN-OS 11.1)
-- Production SAP ERP PostgreSQL Database Cluster (10.240.30.25, RHEL 9.4)
-- Enterprise FlashArray SAN-A (Pure Storage 325TB FC array)
-- Corporate Campus Distribution Switch (Cisco Catalyst 9500, IOS-XE)
-- AWS Kubernetes Ingress Nodes (EKS / EC2)
-- Executive & Operations Workstation Fleet (Lenovo ThinkPad P16 & Dell Precision, including AST-WKS-104)
+Primary Regional Operations Context:
+- Operations Hub: Dubai, United Arab Emirates (UAE)
+- Timezone: Gulf Standard Time (GST, UTC+04:00)
+- Primary Regional Datacenter: Dubai Internet City (DIC DC-1) & Equinix DX1
+- Regional HQ: DIFC Gate Tower, Dubai UAE
+- Disaster Recovery Site: Abu Dhabi Kizad Standby AZ-2
+- Cloud Region: AWS Middle East (UAE - Dubai 'me-central-1')
+- Telecom Carriers: e& (Etisalat by e&) and du redundant dark fiber loops
+- Regulatory Compliance: UAE TDRA, NESA UAE Information Assurance Standards (IAS), ISO/IEC 27001:2022
+
+The organizational infrastructure environment contains:
+- Primary Active Directory DC01 (10.240.10.11, Windows Server 2022, DIC DC-1)
+- Edge Perimeter Firewall HA (Palo Alto PA-3420, PAN-OS 11.1, DIC DC-1)
+- Production SAP ERP PostgreSQL Database Cluster (10.240.30.25, RHEL 9.4, Dubai Silicon Oasis)
+- Enterprise FlashArray SAN-A (Pure Storage 325TB FC array, DIC DC-1)
+- Corporate Campus Distribution Switch (Cisco Catalyst 9500, IOS-XE, Dubai HQ)
+- AWS Kubernetes Ingress Nodes (EKS / EC2 in AWS me-central-1 UAE)
+- Executive & Operations Workstation Fleet (Lenovo ThinkPad P16 in DIFC Suite 402 & Dell Precision at Business Bay Station 12)
 
 ${infrastructureContext}
 
@@ -267,10 +309,10 @@ RESPONSE GUIDELINES:
    - **Immediate Triage / Remediation (Step-by-Step)**: Clear sequence of actions.
    - **Validated Diagnostic / Fix CLI Commands**: Copyable code snippets (bash, PowerShell, Cisco IOS-XE, PAN-OS, kubectl, psql).
    - **Post-Incident Hardening & Verification**: How to ensure the fault is resolved and won't recur.
-3. If the user asks about hazardous conditions like swollen batteries (e.g., AST-WKS-104 Lenovo ThinkPad):
-   - Immediately provide IT safety protocols (power down, do not charge, quarantine, fire safety).
-   - Detail asset replacement & user continuity steps (loaner, BitLocker keys, OneDrive restore).
-   - Provide manufacturer warranty claim procedures (Lenovo Premier Support NBD dispatch, serial number lookup, EPA battery disposal).
+3. If the user asks about hazardous conditions like swollen batteries (e.g., AST-WKS-104 Lenovo ThinkPad in DIFC Office 402, Dubai):
+   - Immediately provide IT safety protocols (power down, do not charge, isolate in Class D / Li-Ion fire containment bag, fire safety).
+   - Detail asset replacement & user continuity steps (executive loaner from Dubai IT safe, BitLocker keys, OneDrive restore).
+   - Provide manufacturer warranty claim procedures (Lenovo Premier Support UAE NBD on-site technician dispatch to DIFC Dubai, serial number lookup, Dubai Municipality / certified UAE e-waste hazmat recycling via EnviroServe in Dubai Industrial City).
 4. Maintain a crisp, professional, enterprise-grade engineering tone.`;
 
       const sanitizedMessages = messages.filter(m => m && m.content && m.content.trim() !== '');
@@ -343,28 +385,72 @@ RESPONSE GUIDELINES:
       res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
     });
   } else {
-    // Vite middleware mode with HTTP server binding for stable WebSocket HMR
+    // Attach a resilient WebSocket server to httpServer to handle Vite client connections
+    const wss = new WebSocketServer({ server: httpServer });
+
+    wss.on('connection', (ws: WebSocket) => {
+      try {
+        // Send initial connected handshake that Vite client expects
+        ws.send(JSON.stringify({ type: 'connected' }));
+      } catch (e) {
+        // silent
+      }
+
+      ws.on('message', (data: any) => {
+        try {
+          const parsed = JSON.parse(data.toString());
+          if (parsed && parsed.type === 'ping') {
+            ws.send(JSON.stringify({ type: 'pong' }));
+          }
+        } catch (e) {
+          // ignore non-json
+        }
+      });
+
+      ws.on('error', () => {
+        // ignore connection drops cleanly
+      });
+    });
+
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
-        hmr: process.env.DISABLE_HMR === 'true' ? false : { server: httpServer },
+        hmr: false,
       },
       appType: 'spa',
     });
-    app.use(vite.middlewares);
 
-    // Fallback for HTML navigation in development mode
-    app.use('*', async (req: Request, res: Response, next) => {
-      const url = req.originalUrl;
-      try {
-        let template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
-        template = await vite.transformIndexHtml(url, template);
-        res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
-      } catch (e: any) {
-        vite.ssrFixStacktrace(e);
-        next(e);
+    // Intercept HTML requests in development mode to guarantee vite-ws-guard runs before @vite/client
+    app.use(async (req: Request, res: Response, next) => {
+      const isHtmlReq = req.method === 'GET' && (
+        req.headers.accept?.includes('text/html') || 
+        req.url === '/' || 
+        req.url === '/index.html' ||
+        !req.url.includes('.')
+      );
+
+      if (isHtmlReq) {
+        const url = req.originalUrl || req.url;
+        try {
+          let template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
+          template = await vite.transformIndexHtml(url, template);
+          // Hoist our WebSocket guard script to run BEFORE @vite/client
+          const guardMatch = template.match(/<script id="vite-ws-guard">[\s\S]*?<\/script>/);
+          if (guardMatch) {
+            const guardScript = guardMatch[0];
+            template = template.replace(guardScript, '');
+            template = template.replace('<head>', '<head>\n    ' + guardScript);
+          }
+          return res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
+        } catch (e: any) {
+          vite.ssrFixStacktrace(e);
+          return next(e);
+        }
       }
+      next();
     });
+
+    app.use(vite.middlewares);
   }
 
   httpServer.listen(PORT, '0.0.0.0', () => {

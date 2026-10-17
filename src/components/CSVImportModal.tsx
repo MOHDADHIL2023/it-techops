@@ -158,7 +158,7 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
                 {fileName ? fileName : 'Drop your CSV incident log file here'}
               </div>
               <p className="text-xs text-slate-500">
-                Compatible with TechOps Command CSV exports, ServiceNow, Jira, and standard Excel CSV formats
+                Compatible with I.T. TechOps CSV exports, ServiceNow, Jira, and standard Excel CSV formats
               </p>
               <button
                 type="button"

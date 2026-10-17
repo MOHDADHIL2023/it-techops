@@ -47,7 +47,11 @@ export default function App() {
 
   // Operator Specialist profile state
   const [operatorName, setOperatorName] = useState<string>(() => {
-    return localStorage.getItem('techops_operator') || 'Alex Rivera';
+    const saved = localStorage.getItem('techops_operator');
+    if (saved && saved !== 'Alex Rivera') {
+      return saved;
+    }
+    return 'Adil Hossain';
   });
 
   // Navigation & Filter state

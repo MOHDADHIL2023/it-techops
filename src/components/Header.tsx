@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Upload, 
@@ -12,7 +12,11 @@ import {
   ShieldCheck,
   Search,
   Zap,
-  Activity
+  Activity,
+  MapPin,
+  Globe,
+  Building2,
+  X
 } from 'lucide-react';
 import { ITTechOpsLogo } from './ITTechOpsLogo';
 
@@ -49,6 +53,40 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isEditingOperator, setIsEditingOperator] = useState(false);
   const [tempOperatorName, setTempOperatorName] = useState(operatorName);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+
+  // Live Dubai Time (Gulf Standard Time, UTC+4)
+  const [dubaiTime, setDubaiTime] = useState<string>(() => {
+    try {
+      return new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Dubai',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).format(new Date());
+    } catch (e) {
+      const d = new Date(Date.now() + 4 * 3600 * 1000);
+      return d.toISOString().substring(11, 16);
+    }
+  });
+
+  useEffect(() => {
+    const updateTime = () => {
+      try {
+        setDubaiTime(new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'Asia/Dubai',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).format(new Date()));
+      } catch (e) {
+        const d = new Date(Date.now() + 4 * 3600 * 1000);
+        setDubaiTime(d.toISOString().substring(11, 16));
+      }
+    };
+    const timer = setInterval(updateTime, 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleSaveOperator = () => {
     if (tempOperatorName.trim()) {
@@ -110,6 +148,88 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right: Quick Action Hub & Helpdesk button */}
         <div className="flex items-center space-x-2">
+          {/* Location Badge: Dubai, UAE */}
+          <div className="relative">
+            <button
+              onClick={() => setShowLocationModal(!showLocationModal)}
+              title="Regional Hub: Dubai, UAE (Click to view infrastructure telemetry)"
+              className="inline-flex items-center space-x-1.5 px-2.5 py-1.5 bg-slate-50 hover:bg-blue-50 text-slate-800 hover:text-blue-900 border border-slate-300 hover:border-blue-400 rounded-sm text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
+            >
+              <MapPin className="w-3.5 h-3.5 text-rose-600 flex-shrink-0" />
+              <span className="font-bold">Dubai, UAE</span>
+              <span className="text-slate-400 hidden sm:inline">·</span>
+              <span className="font-mono text-[11px] text-blue-900 font-bold hidden sm:inline">
+                {dubaiTime} GST
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse ml-0.5"></span>
+            </button>
+
+            {/* Dubai Operations Hub Telemetry Flyout */}
+            {showLocationModal && (
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-300 shadow-2xl rounded-sm p-4 z-50 text-xs">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
+                      <MapPin className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-sm">Dubai Operations Hub</h3>
+                      <p className="text-[10px] text-slate-500 font-mono">United Arab Emirates (GST · UTC+4)</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowLocationModal(false)}
+                    className="p-1 text-slate-400 hover:text-slate-700 cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-2.5 text-slate-700">
+                  <div className="flex items-center justify-between p-2 bg-slate-50 border border-slate-200">
+                    <span className="text-slate-500 font-medium">Local Dubai Time:</span>
+                    <span className="font-mono font-bold text-blue-900">{dubaiTime} GST (UTC+04:00)</span>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between border-b border-slate-100 pb-1">
+                      <span className="text-slate-500 font-medium">Primary DC Facility:</span>
+                      <span className="font-semibold text-slate-900 text-right">Dubai Internet City (DIC DC-1)</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-100 pb-1">
+                      <span className="text-slate-500 font-medium">Regional HQ:</span>
+                      <span className="font-semibold text-slate-900 text-right">DIFC Gate Tower, Dubai</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-100 pb-1">
+                      <span className="text-slate-500 font-medium">DR Failover Site:</span>
+                      <span className="font-semibold text-slate-900 text-right">Abu Dhabi Kizad Standby AZ-2</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-100 pb-1">
+                      <span className="text-slate-500 font-medium">Cloud Region:</span>
+                      <span className="font-semibold text-slate-900 text-right font-mono">AWS me-central-1 (UAE)</span>
+                    </div>
+                    <div className="flex justify-between border-b border-slate-100 pb-1">
+                      <span className="text-slate-500 font-medium">Carrier Transit:</span>
+                      <span className="font-semibold text-slate-900 text-right">e& (Etisalat) + du Dark Fiber</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500 font-medium">Regulatory Body:</span>
+                      <span className="font-semibold text-emerald-700 text-right">UAE TDRA / NESA IAS</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-[11px]">
+                    <span className="text-emerald-700 font-bold flex items-center">
+                      <ShieldCheck className="w-3.5 h-3.5 mr-1" />
+                      NOC Status: 100% Operational
+                    </span>
+                    <span className="text-slate-500 font-mono">Ping: 3.2ms</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* IT Helpdesk Quick Launcher */}
           <button
             onClick={onOpenAIAgent}

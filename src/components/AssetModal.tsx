@@ -30,7 +30,7 @@ export const AssetModal: React.FC<AssetModalProps> = ({
   const [warrantyExpiry, setWarrantyExpiry] = useState(asset?.warrantyExpiry || '2027-12-31');
   const [licenseRenewalDate, setLicenseRenewalDate] = useState(asset?.licenseRenewalDate || '2026-12-31');
   const [riskLevel, setRiskLevel] = useState<RiskLevel>(asset?.riskLevel || 'Low');
-  const [location, setLocation] = useState(asset?.location || 'Primary Datacenter - Rack 03');
+  const [location, setLocation] = useState(asset?.location || 'Dubai Internet City DC-1 - Rack 03, Dubai UAE');
 
   // Baseline tabs
   const [activeTab, setActiveTab] = useState<'general' | 'baseline' | 'network' | 'dr'>('general');
@@ -57,7 +57,7 @@ export const AssetModal: React.FC<AssetModalProps> = ({
   const [roleTier, setRoleTier] = useState(asset?.disasterRecovery.roleTier || 'Tier 1 - Business Essential');
   const [rto, setRto] = useState(asset?.disasterRecovery.rto || '< 1 hour');
   const [rpo, setRpo] = useState(asset?.disasterRecovery.rpo || '< 15 min');
-  const [failoverSite, setFailoverSite] = useState(asset?.disasterRecovery.failoverSite || 'DR Secondary Datacenter Site B');
+  const [failoverSite, setFailoverSite] = useState(asset?.disasterRecovery.failoverSite || 'DR Secondary Datacenter - Abu Dhabi Kizad Site B');
   const [replicationCadence, setReplicationCadence] = useState(asset?.disasterRecovery.replicationCadence || 'Daily Snapshot + Asynchronous Replication');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -289,7 +289,7 @@ export const AssetModal: React.FC<AssetModalProps> = ({
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="e.g. Primary DC Rack 01 (U40)"
+                    placeholder="e.g. Dubai Internet City DC-1 - Rack 01 (U40), Dubai UAE"
                     className="w-full px-2.5 py-1.5 border border-slate-300 text-xs bg-white rounded-none"
                   />
                 </div>

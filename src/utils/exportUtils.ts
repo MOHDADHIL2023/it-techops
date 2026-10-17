@@ -280,7 +280,7 @@ export function downloadAuditReportPDF(
 </head>
 <body>
   <div class="print-bar">
-    <span><strong>TechOps Command · Printable Audit Report Document</strong> (Click Print or press Ctrl+P / Cmd+P to save as PDF)</span>
+    <span><strong>I.T. TechOps · Printable Audit Report Document</strong> (Click Print or press Ctrl+P / Cmd+P to save as PDF)</span>
     <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
   </div>
 
@@ -288,13 +288,15 @@ export function downloadAuditReportPDF(
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
       <div>
         <span class="badge">CONFIDENTIAL · ENTERPRISE IT AUDIT</span>
-        <h1 class="title">TechOps Command · Operations Audit Report</h1>
+        <h1 class="title">I.T. TechOps · Operations Audit Report</h1>
         <p style="margin: 0; color: #475569; font-size: 10pt;">
           Executive Infrastructure Health, SLA Compliance Verification, and Disaster Recovery Readiness Assessment
         </p>
       </div>
       <div style="text-align: right; font-size: 9pt; font-family: monospace; color: #475569;">
         <div><strong>Reference: AUD-2026-Q4-OPS</strong></div>
+        <div style="color: #0f3d7a; font-weight: bold;">Location: Dubai, UAE (GST · UTC+4)</div>
+        <div>Facility: Equinix DX1 / DIC DC-1</div>
         <div>Date: ${currentDate}</div>
         <div>Auditor: ${operatorName}</div>
       </div>
@@ -381,7 +383,7 @@ export function downloadAuditReportPDF(
   <div class="sign-block">
     <h2>5. Operations Architecture & Compliance Attestation</h2>
     <p style="font-size: 9pt; color: #475569;">
-      This certifies that the operational infrastructure, incident response times, and baseline security configurations recorded in I.T. TechOps reflect true state parameters for Q4 2026.
+      This certifies that the operational infrastructure, incident response times, and baseline security configurations recorded in I.T. TechOps for our Dubai, UAE regional headquarters and primary datacenters reflect true state parameters for Q4 2026, conforming with UAE TDRA regulations, NESA UAE Information Assurance Standards (IAS), and ISO/IEC 27001:2022.
     </p>
     <div class="sign-grid">
       <div>

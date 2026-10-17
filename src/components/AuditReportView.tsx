@@ -139,7 +139,9 @@ export const AuditReportView: React.FC<AuditReportViewProps> = ({
               </p>
             </div>
             <div className="text-right text-xs font-mono text-slate-600">
-              <div className="font-bold text-slate-900">Enterprise IT Support Ops</div>
+              <div className="font-bold text-slate-900">Enterprise IT Operations Command</div>
+              <div className="text-blue-900 font-semibold">📍 Dubai, UAE (GST · UTC+4)</div>
+              <div>Facility: Equinix DX1 / DIC DC-1</div>
               <div>Generated: {currentDate}</div>
               <div>Auditor: {operatorName} (Tier-3 Ops)</div>
             </div>
@@ -300,7 +302,7 @@ export const AuditReportView: React.FC<AuditReportViewProps> = ({
             5. Operations Architecture & Compliance Attestation
           </h2>
           <p className="text-xs text-slate-600 mb-6">
-            This certifies that the operational infrastructure, incident response times, and baseline security configurations recorded in TechOps Command reflect true state parameters for Q4 2026.
+            This certifies that the operational infrastructure, incident response times, and baseline security configurations recorded in I.T. TechOps for our Dubai, UAE regional headquarters and primary datacenters reflect true state parameters for Q4 2026, conforming with UAE TDRA regulations, NESA UAE Information Assurance Standards (IAS), and ISO/IEC 27001:2022.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 text-xs">

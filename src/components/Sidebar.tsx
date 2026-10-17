@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ShieldAlert, 
   Server, 
@@ -17,7 +17,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Menu,
-  X
+  X,
+  MapPin,
+  User,
+  UserCheck
 } from 'lucide-react';
 import { ITTechOpsLogo } from './ITTechOpsLogo';
 
@@ -56,6 +59,39 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [isEditingOperator, setIsEditingOperator] = useState(false);
   const [tempOperatorName, setTempOperatorName] = useState(operatorName);
+
+  // Live Dubai Time (Gulf Standard Time, UTC+4)
+  const [dubaiTime, setDubaiTime] = useState<string>(() => {
+    try {
+      return new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Dubai',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).format(new Date());
+    } catch (e) {
+      const d = new Date(Date.now() + 4 * 3600 * 1000);
+      return d.toISOString().substring(11, 16);
+    }
+  });
+
+  useEffect(() => {
+    const updateTime = () => {
+      try {
+        setDubaiTime(new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'Asia/Dubai',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).format(new Date()));
+      } catch (e) {
+        const d = new Date(Date.now() + 4 * 3600 * 1000);
+        setDubaiTime(d.toISOString().substring(11, 16));
+      }
+    };
+    const timer = setInterval(updateTime, 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleSaveOperator = () => {
     if (tempOperatorName.trim()) {
@@ -126,6 +162,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="font-semibold text-emerald-300">NOC: OPTIMAL</span>
           </div>
           <span className="font-mono text-blue-300 text-[10px]">HA CLUSTER ONLINE</span>
+        </div>
+
+        {/* Regional Location Hub: Dubai, UAE */}
+        <div className="mt-2 px-2.5 py-1.5 bg-gradient-to-r from-blue-950 to-[#0e274a] border border-blue-800/70 rounded-xs flex items-center justify-between text-[11px]">
+          <div className="flex items-center space-x-1.5">
+            <MapPin className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+            <span className="font-bold text-white tracking-wide">Dubai, UAE</span>
+          </div>
+          <span className="font-mono text-emerald-300 text-[10px] font-semibold">{dubaiTime} GST</span>
         </div>
       </div>
 
@@ -238,47 +283,76 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center justify-between text-blue-300 text-[11px] mb-1.5">
           <span className="font-mono flex items-center space-x-1">
             <Clock className="w-3 h-3 text-emerald-400" />
-            <span>UTC {new Date().toISOString().substring(11, 16)}</span>
+            <span>GST {dubaiTime} (UTC+4)</span>
           </span>
-          <span className="px-1.5 py-0.2 bg-blue-900 text-[9px] font-mono text-blue-200">SHIFT 1</span>
+          <span className="px-1.5 py-0.2 bg-blue-900 text-[9px] font-mono text-emerald-300 font-bold">HUB: DUBAI UAE</span>
         </div>
 
-        <div className="pt-1.5 border-t border-blue-900/40">
-          <div className="text-[10px] text-blue-400 font-medium">Logged-In IT Specialist:</div>
-          {isEditingOperator ? (
-            <div className="flex items-center space-x-1 mt-1">
-              <input
-                type="text"
-                value={tempOperatorName}
-                onChange={(e) => setTempOperatorName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSaveOperator();
-                  if (e.key === 'Escape') setIsEditingOperator(false);
-                }}
-                autoFocus
-                className="w-full px-1.5 py-0.5 bg-blue-950 border border-blue-400 text-white text-xs font-semibold focus:outline-none"
-              />
-              <button
-                onClick={handleSaveOperator}
-                className="p-1 bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer"
-                title="Save Operator Name"
+        <div className="pt-2 border-t border-blue-900/40">
+          <div className="flex items-center space-x-2.5">
+            {/* Duty Specialist User Icon Avatar */}
+            <div className="relative flex-shrink-0">
+              <div 
+                className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-emerald-500 border border-blue-300/40 flex items-center justify-center text-white font-bold text-xs shadow-sm"
+                title="Duty IT Support Specialist"
               >
-                <Check className="w-3 h-3" />
-              </button>
+                {operatorName
+                  .split(' ')
+                  .filter(Boolean)
+                  .map(n => n[0])
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase() || 'AH'}
+              </div>
+              {/* Online Green Indicator Dot */}
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071629] animate-pulse"></span>
             </div>
-          ) : (
-            <div 
-              onClick={() => {
-                setTempOperatorName(operatorName);
-                setIsEditingOperator(true);
-              }}
-              className="flex items-center justify-between mt-0.5 text-white cursor-pointer hover:text-emerald-300 group"
-              title="Click to edit operator name"
-            >
-              <span className="font-bold truncate text-xs group-hover:underline">{operatorName}</span>
-              <Edit2 className="w-3 h-3 text-blue-400 group-hover:text-emerald-300 opacity-70 group-hover:opacity-100" />
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-blue-400 font-semibold uppercase tracking-wider">Duty Specialist</span>
+                <span className="px-1.5 py-0.2 bg-emerald-900/70 border border-emerald-500/50 text-emerald-300 text-[9px] font-bold rounded-xs">
+                  ON-DUTY
+                </span>
+              </div>
+              
+              {isEditingOperator ? (
+                <div className="flex items-center space-x-1 mt-1">
+                  <input
+                    type="text"
+                    value={tempOperatorName}
+                    onChange={(e) => setTempOperatorName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveOperator();
+                      if (e.key === 'Escape') setIsEditingOperator(false);
+                    }}
+                    autoFocus
+                    className="w-full px-1.5 py-0.5 bg-blue-950 border border-blue-400 text-white text-xs font-semibold focus:outline-none"
+                  />
+                  <button
+                    onClick={handleSaveOperator}
+                    className="p-1 bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer"
+                    title="Save Specialist Name"
+                  >
+                    <Check className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <div 
+                  onClick={() => {
+                    setTempOperatorName(operatorName);
+                    setIsEditingOperator(true);
+                  }}
+                  className="flex items-center justify-between mt-0.5 text-white cursor-pointer hover:text-emerald-300 group"
+                  title="Click to edit specialist name"
+                >
+                  <span className="font-bold truncate text-xs group-hover:underline">{operatorName}</span>
+                  <Edit2 className="w-3 h-3 text-blue-400 group-hover:text-emerald-300 opacity-70 group-hover:opacity-100 flex-shrink-0 ml-1" />
+                </div>
+              )}
+              <div className="text-[10px] text-blue-300/80 truncate font-medium">Duty IT Support Specialist</div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
