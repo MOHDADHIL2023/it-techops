@@ -296,15 +296,15 @@ I am your Tier-3 IT Systems Architect & Operations Helpdesk. I have direct acces
         slaTargetMinutes: t.slaTargetMinutes,
       }));
 
-      const assetsSummary = assets.map(a => ({
+      const assetsSummary = (assets || []).map(a => ({
         tagId: a.tagId,
         name: a.name,
         type: a.type,
-        ip: a.networkMapping.ipAddress,
-        vlan: a.networkMapping.vlanId,
-        os: a.architectureBaseline.osBaseline,
+        ip: a.networkMapping?.ipAddress || 'DHCP/Dynamic',
+        vlan: a.networkMapping?.vlanId || 'VLAN 10',
+        os: a.architectureBaseline?.osBaseline || 'N/A',
         risk: a.riskLevel,
-        drTier: a.disasterRecovery.roleTier,
+        drTier: a.disasterRecovery?.roleTier || 'Tier-2',
       }));
 
       let replyContent = '';

@@ -157,7 +157,7 @@ export function mapCsvRowsToTickets(rows: string[][]): {
       slaTargetMinutes: slaTarget,
       firstResponseMinutes: status === 'Resolved' ? Math.floor(slaTarget * 0.5) : null,
       resolvedAt: status === 'Resolved' ? new Date().toISOString() : null,
-      assignedTo: assignedCol >= 0 && row[assignedCol]?.trim() ? row[assignedCol].trim() : 'Alex Rivera',
+      assignedTo: assignedCol >= 0 && row[assignedCol]?.trim() ? row[assignedCol].trim() : 'Adil Hossain',
       department: deptCol >= 0 && row[deptCol]?.trim() ? row[deptCol].trim() : 'IT Operations',
       description: descCol >= 0 && row[descCol]?.trim() ? row[descCol].trim() : (rawTitle || 'No description provided in CSV.'),
       rootCause: rootCauseCol >= 0 && row[rootCauseCol]?.trim() ? row[rootCauseCol].trim() : undefined,

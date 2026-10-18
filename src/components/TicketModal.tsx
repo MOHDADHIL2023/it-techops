@@ -32,6 +32,7 @@ interface TicketModalProps {
   onSaveTicket: (ticket: IncidentTicket) => void;
   assets: AssetRecord[];
   onConsultAI?: (ticket: IncidentTicket) => void;
+  operatorName?: string;
 }
 
 export const TicketModal: React.FC<TicketModalProps> = ({
@@ -42,6 +43,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   onSaveTicket,
   assets,
   onConsultAI,
+  operatorName = 'Adil Hossain',
 }) => {
   if (!isOpen) return null;
 
@@ -51,7 +53,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [priority, setPriority] = useState<PriorityLevel>(ticket?.priority || 'Medium');
   const [status, setStatus] = useState<TicketStatus>(ticket?.status || 'Open');
   const [category, setCategory] = useState<TicketCategory>(ticket?.category || 'Network');
-  const [assignedTo, setAssignedTo] = useState(ticket?.assignedTo || 'Alex Rivera');
+  const [assignedTo, setAssignedTo] = useState(ticket?.assignedTo || operatorName);
   const [department, setDepartment] = useState(ticket?.department || 'IT Operations');
   const [description, setDescription] = useState(ticket?.description || '');
   const [rootCause, setRootCause] = useState(ticket?.rootCause || '');
@@ -139,7 +141,7 @@ Valid priorities: "Critical" | "High" | "Medium" | "Low"`
     const newActivity = {
       id: `act-${Date.now()}`,
       timestamp: new Date().toISOString(),
-      author: 'Alex Rivera (IT Support Specialist)',
+      author: `${operatorName} (Duty IT Support Specialist)`,
       action: 'Progress Update',
       note: newLogNote.trim(),
     };
@@ -214,7 +216,7 @@ Valid priorities: "Critical" | "High" | "Medium" | "Low"`
           {
             id: `act-${Date.now()}`,
             timestamp: new Date().toISOString(),
-            author: 'Alex Rivera',
+            author: operatorName,
             action: 'Record Updated',
             note: `Status updated to ${status}. Priority set to ${priority}.`,
           },

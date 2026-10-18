@@ -66,16 +66,17 @@ export const IncidentLedger: React.FC<IncidentLedgerProps> = ({
   };
 
   const filteredIncidents = useMemo(() => {
-    return incidents.filter(ticket => {
+    return (incidents || []).filter(ticket => {
+      if (!ticket) return false;
       // Search match
-      const query = searchTerm.toLowerCase();
-      const matchesSearch = 
-        ticket.id.toLowerCase().includes(query) ||
-        ticket.title.toLowerCase().includes(query) ||
-        ticket.assetId.toLowerCase().includes(query) ||
-        ticket.assetName.toLowerCase().includes(query) ||
-        ticket.assignedTo.toLowerCase().includes(query) ||
-        ticket.department.toLowerCase().includes(query);
+      const query = (searchTerm || '').toLowerCase();
+      const matchesSearch = !query || 
+        (ticket.id || '').toLowerCase().includes(query) ||
+        (ticket.title || '').toLowerCase().includes(query) ||
+        (ticket.assetId || '').toLowerCase().includes(query) ||
+        (ticket.assetName || '').toLowerCase().includes(query) ||
+        (ticket.assignedTo || '').toLowerCase().includes(query) ||
+        (ticket.department || '').toLowerCase().includes(query);
 
       // Filters
       const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter;
@@ -85,17 +86,19 @@ export const IncidentLedger: React.FC<IncidentLedgerProps> = ({
       return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
     }).sort((a, b) => {
       if (sortBy === 'priority') {
-        const diff = priorityOrder[b.priority] - priorityOrder[a.priority];
+        const pA = priorityOrder[a.priority] || 0;
+        const pB = priorityOrder[b.priority] || 0;
+        const diff = pB - pA;
         return sortOrder === 'asc' ? -diff : diff;
       }
       if (sortBy === 'sla') {
-        const slaA = calculateTicketSla(a).remainingMinutes;
-        const slaB = calculateTicketSla(b).remainingMinutes;
+        const slaA = calculateTicketSla(a)?.remainingMinutes ?? 0;
+        const slaB = calculateTicketSla(b)?.remainingMinutes ?? 0;
         return sortOrder === 'asc' ? slaA - slaB : slaB - slaA;
       }
       // default: created time
-      const timeA = new Date(a.createdAt).getTime();
-      const timeB = new Date(b.createdAt).getTime();
+      const timeA = new Date(a?.createdAt || 0).getTime() || 0;
+      const timeB = new Date(b?.createdAt || 0).getTime() || 0;
       return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
     });
   }, [incidents, searchTerm, statusFilter, priorityFilter, categoryFilter, sortBy, sortOrder]);

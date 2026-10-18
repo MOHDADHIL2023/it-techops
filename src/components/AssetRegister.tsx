@@ -50,20 +50,21 @@ export const AssetRegister: React.FC<AssetRegisterProps> = ({
   };
 
   const departments = useMemo(() => {
-    return Array.from(new Set(assets.map(a => a.department))).sort();
+    return Array.from(new Set((assets || []).map(a => a?.department).filter(Boolean) as string[])).sort();
   }, [assets]);
 
   const filteredAssets = useMemo(() => {
-    return assets.filter(asset => {
-      const query = searchTerm.toLowerCase();
-      const matchesSearch = 
-        asset.tagId.toLowerCase().includes(query) ||
-        asset.name.toLowerCase().includes(query) ||
-        asset.modelSpecs.toLowerCase().includes(query) ||
-        asset.assignedUser.toLowerCase().includes(query) ||
-        asset.location.toLowerCase().includes(query) ||
-        asset.networkMapping.ipAddress.includes(query) ||
-        asset.networkMapping.switchPort.toLowerCase().includes(query);
+    return (assets || []).filter(asset => {
+      if (!asset) return false;
+      const query = (searchTerm || '').toLowerCase();
+      const matchesSearch = !query ||
+        (asset.tagId || '').toLowerCase().includes(query) ||
+        (asset.name || '').toLowerCase().includes(query) ||
+        (asset.modelSpecs || '').toLowerCase().includes(query) ||
+        (asset.assignedUser || '').toLowerCase().includes(query) ||
+        (asset.location || '').toLowerCase().includes(query) ||
+        (asset.networkMapping?.ipAddress || '').includes(query) ||
+        (asset.networkMapping?.switchPort || '').toLowerCase().includes(query);
 
       const matchesType = typeFilter === 'all' || asset.type === typeFilter;
       const matchesDept = departmentFilter === 'all' || asset.department === departmentFilter;

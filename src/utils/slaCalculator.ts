@@ -11,16 +11,33 @@ export interface SlaStatusResult {
 }
 
 export function calculateTicketSla(ticket: IncidentTicket): SlaStatusResult {
-  const created = new Date(ticket.createdAt).getTime();
-  const now = Date.now();
-  const elapsedMinutes = Math.floor((now - created) / (60 * 1000));
-  const remainingMinutes = ticket.slaTargetMinutes - elapsedMinutes;
-
-  if (ticket.status === 'Resolved') {
-    const isBreached = (ticket.firstResponseMinutes ?? elapsedMinutes) > ticket.slaTargetMinutes;
+  if (!ticket) {
     return {
       remainingMinutes: 0,
-      elapsedMinutes: ticket.firstResponseMinutes ?? elapsedMinutes,
+      elapsedMinutes: 0,
+      isBreached: false,
+      isWarning: false,
+      isResolved: false,
+      displayTimer: 'N/A',
+      badgeClass: 'text-slate-600 bg-slate-50 border-slate-200',
+    };
+  }
+
+  const createdTime = ticket.createdAt ? new Date(ticket.createdAt).getTime() : Date.now();
+  const created = isNaN(createdTime) ? Date.now() : createdTime;
+  const now = Date.now();
+  const elapsedMinutes = Math.max(0, Math.floor((now - created) / (60 * 1000)));
+  const slaTargetMinutes = typeof ticket.slaTargetMinutes === 'number' && !isNaN(ticket.slaTargetMinutes)
+    ? ticket.slaTargetMinutes
+    : 60;
+  const remainingMinutes = slaTargetMinutes - elapsedMinutes;
+
+  if (ticket.status === 'Resolved') {
+    const respMinutes = typeof ticket.firstResponseMinutes === 'number' ? ticket.firstResponseMinutes : elapsedMinutes;
+    const isBreached = respMinutes > slaTargetMinutes;
+    return {
+      remainingMinutes: 0,
+      elapsedMinutes: respMinutes,
       isBreached,
       isWarning: false,
       isResolved: true,
@@ -76,7 +93,9 @@ export interface OperationsMetrics {
 }
 
 export function computeOperationsMetrics(incidents: IncidentTicket[]): OperationsMetrics {
-  if (incidents.length === 0) {
+  const validIncidents = Array.isArray(incidents) ? incidents.filter(Boolean) : [];
+
+  if (validIncidents.length === 0) {
     return {
       mttrMinutes: 0,
       mttrHoursFormatted: '0m',
@@ -97,7 +116,7 @@ export function computeOperationsMetrics(incidents: IncidentTicket[]): Operation
   }
 
   // Calculate Mean Time to Respond (MTTR)
-  const respondedTickets = incidents.filter(i => i.firstResponseMinutes !== null);
+  const respondedTickets = validIncidents.filter(i => typeof i.firstResponseMinutes === 'number' && i.firstResponseMinutes !== null);
   const totalResponseTime = respondedTickets.reduce((sum, i) => sum + (i.firstResponseMinutes || 0), 0);
   const mttrMinutes = respondedTickets.length > 0 ? Math.round(totalResponseTime / respondedTickets.length) : 0;
   
@@ -107,10 +126,11 @@ export function computeOperationsMetrics(incidents: IncidentTicket[]): Operation
 
   // Calculate SLA compliance rate
   let compliantCount = 0;
-  incidents.forEach(ticket => {
+  validIncidents.forEach(ticket => {
     const responseTime = ticket.firstResponseMinutes;
-    if (responseTime !== null) {
-      if (responseTime <= ticket.slaTargetMinutes) {
+    const target = typeof ticket.slaTargetMinutes === 'number' ? ticket.slaTargetMinutes : 60;
+    if (typeof responseTime === 'number' && responseTime !== null) {
+      if (responseTime <= target) {
         compliantCount++;
       }
     } else {
@@ -121,33 +141,36 @@ export function computeOperationsMetrics(incidents: IncidentTicket[]): Operation
     }
   });
 
-  const slaComplianceRate = Math.round((compliantCount / incidents.length) * 100);
+  const slaComplianceRate = Math.round((compliantCount / validIncidents.length) * 100);
 
   // Status counts
-  const openIncidents = incidents.filter(i => i.status === 'Open' || i.status === 'In-Progress').length;
-  const criticalIncidents = incidents.filter(i => i.priority === 'Critical' && i.status !== 'Resolved').length;
-  const escalatedIncidents = incidents.filter(i => i.status === 'Escalated').length;
+  const openIncidents = validIncidents.filter(i => i.status === 'Open' || i.status === 'In-Progress').length;
+  const criticalIncidents = validIncidents.filter(i => i.priority === 'Critical' && i.status !== 'Resolved').length;
+  const escalatedIncidents = validIncidents.filter(i => i.status === 'Escalated').length;
 
   // Category breakdown
   const categoryMap = new Map<string, number>();
-  incidents.forEach(i => {
-    categoryMap.set(i.category, (categoryMap.get(i.category) || 0) + 1);
+  validIncidents.forEach(i => {
+    const cat = i.category || 'General Operations';
+    categoryMap.set(cat, (categoryMap.get(cat) || 0) + 1);
   });
   const categoryBreakdown = Array.from(categoryMap.entries()).map(([category, count]) => ({
     category,
     count,
-    percentage: Math.round((count / incidents.length) * 100),
+    percentage: Math.round((count / validIncidents.length) * 100),
   })).sort((a, b) => b.count - a.count);
 
   // Top impacted systems
   const assetMap = new Map<string, { assetName: string; count: number; critical: number }>();
-  incidents.forEach(i => {
-    const existing = assetMap.get(i.assetId) || { assetName: i.assetName, count: 0, critical: 0 };
+  validIncidents.forEach(i => {
+    const assetId = i.assetId || 'UNASSIGNED';
+    const assetName = i.assetName || 'General Infrastructure';
+    const existing = assetMap.get(assetId) || { assetName, count: 0, critical: 0 };
     existing.count += 1;
     if (i.priority === 'Critical') {
       existing.critical += 1;
     }
-    assetMap.set(i.assetId, existing);
+    assetMap.set(assetId, existing);
   });
 
   const topImpactedSystems = Array.from(assetMap.entries())
@@ -162,10 +185,10 @@ export function computeOperationsMetrics(incidents: IncidentTicket[]): Operation
 
   // Priority distribution
   const priorityDistribution: { priority: PriorityLevel; count: number }[] = [
-    { priority: 'Critical', count: incidents.filter(i => i.priority === 'Critical').length },
-    { priority: 'High', count: incidents.filter(i => i.priority === 'High').length },
-    { priority: 'Medium', count: incidents.filter(i => i.priority === 'Medium').length },
-    { priority: 'Low', count: incidents.filter(i => i.priority === 'Low').length },
+    { priority: 'Critical', count: validIncidents.filter(i => i.priority === 'Critical').length },
+    { priority: 'High', count: validIncidents.filter(i => i.priority === 'High').length },
+    { priority: 'Medium', count: validIncidents.filter(i => i.priority === 'Medium').length },
+    { priority: 'Low', count: validIncidents.filter(i => i.priority === 'Low').length },
   ];
 
   return {

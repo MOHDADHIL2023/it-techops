@@ -6,7 +6,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
-import { WebSocketServer, WebSocket } from 'ws';
 
 dotenv.config();
 
@@ -385,72 +384,27 @@ RESPONSE GUIDELINES:
       res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
     });
   } else {
-    // Attach a resilient WebSocket server to httpServer to handle Vite client connections
-    const wss = new WebSocketServer({ server: httpServer });
-
-    wss.on('connection', (ws: WebSocket) => {
-      try {
-        // Send initial connected handshake that Vite client expects
-        ws.send(JSON.stringify({ type: 'connected' }));
-      } catch (e) {
-        // silent
-      }
-
-      ws.on('message', (data: any) => {
-        try {
-          const parsed = JSON.parse(data.toString());
-          if (parsed && parsed.type === 'ping') {
-            ws.send(JSON.stringify({ type: 'pong' }));
-          }
-        } catch (e) {
-          // ignore non-json
-        }
-      });
-
-      ws.on('error', () => {
-        // ignore connection drops cleanly
-      });
-    });
-
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
-        hmr: false,
       },
       appType: 'spa',
     });
 
-    // Intercept HTML requests in development mode to guarantee vite-ws-guard runs before @vite/client
-    app.use(async (req: Request, res: Response, next) => {
-      const isHtmlReq = req.method === 'GET' && (
-        req.headers.accept?.includes('text/html') || 
-        req.url === '/' || 
-        req.url === '/index.html' ||
-        !req.url.includes('.')
-      );
-
-      if (isHtmlReq) {
-        const url = req.originalUrl || req.url;
-        try {
-          let template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
-          template = await vite.transformIndexHtml(url, template);
-          // Hoist our WebSocket guard script to run BEFORE @vite/client
-          const guardMatch = template.match(/<script id="vite-ws-guard">[\s\S]*?<\/script>/);
-          if (guardMatch) {
-            const guardScript = guardMatch[0];
-            template = template.replace(guardScript, '');
-            template = template.replace('<head>', '<head>\n    ' + guardScript);
-          }
-          return res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
-        } catch (e: any) {
-          vite.ssrFixStacktrace(e);
-          return next(e);
-        }
-      }
-      next();
-    });
-
     app.use(vite.middlewares);
+
+    // Fallback for HTML navigation in development mode
+    app.use('*', async (req: Request, res: Response, next) => {
+      const url = req.originalUrl;
+      try {
+        let template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
+        template = await vite.transformIndexHtml(url, template);
+        res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
+      } catch (e: any) {
+        vite.ssrFixStacktrace(e);
+        next(e);
+      }
+    });
   }
 
   httpServer.listen(PORT, '0.0.0.0', () => {

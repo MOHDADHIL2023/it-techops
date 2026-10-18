@@ -88,7 +88,7 @@ export function exportIncidentsToCSV(incidents: IncidentTicket[], assets: AssetR
 export function downloadAuditReportPDF(
   incidents: IncidentTicket[], 
   assets: AssetRecord[],
-  operatorName: string = 'Alex Rivera'
+  operatorName: string = 'Adil Hossain'
 ): void {
   const metrics = computeOperationsMetrics(incidents);
   const dateStr = new Date().toISOString().split('T')[0];

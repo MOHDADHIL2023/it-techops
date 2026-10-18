@@ -27,27 +27,56 @@ import { AIAgentChat } from './components/AIAgentChat';
 import { CSVImportModal } from './components/CSVImportModal';
 import { CheckCircle2, AlertTriangle, ShieldCheck, Headphones } from 'lucide-react';
 
+// Safe localStorage helpers that never throw in sandboxed iframe environments
+const safeGetStorage = (key: string): string | null => {
+  try {
+    return typeof window !== 'undefined' && window.localStorage ? window.localStorage.getItem(key) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+const safeSetStorage = (key: string, value: string): void => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem(key, value);
+    }
+  } catch (e) {
+    // Ignore SecurityError in sandboxed iframe environments
+  }
+};
+
 export default function App() {
-  // State with LocalStorage persistence fallback
+  // State with LocalStorage persistence fallback & strict validation
   const [incidents, setIncidents] = useState<IncidentTicket[]>(() => {
-    const saved = localStorage.getItem('techops_incidents');
+    const saved = safeGetStorage('techops_incidents');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* fallback */ }
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch (e) { /* fallback */ }
     }
     return INITIAL_INCIDENTS;
   });
 
   const [assets, setAssets] = useState<AssetRecord[]>(() => {
-    const saved = localStorage.getItem('techops_assets');
+    const saved = safeGetStorage('techops_assets');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* fallback */ }
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch (e) { /* fallback */ }
     }
     return INITIAL_ASSETS;
   });
 
-  // Operator Specialist profile state
+  // Duty IT Support Specialist profile state (Adil Hossain)
   const [operatorName, setOperatorName] = useState<string>(() => {
-    const saved = localStorage.getItem('techops_operator');
+    const saved = safeGetStorage('techops_operator');
     if (saved && saved !== 'Alex Rivera') {
       return saved;
     }
@@ -80,15 +109,15 @@ export default function App() {
 
   // Sync to localStorage
   useEffect(() => {
-    localStorage.setItem('techops_incidents', JSON.stringify(incidents));
+    safeSetStorage('techops_incidents', JSON.stringify(incidents));
   }, [incidents]);
 
   useEffect(() => {
-    localStorage.setItem('techops_assets', JSON.stringify(assets));
+    safeSetStorage('techops_assets', JSON.stringify(assets));
   }, [assets]);
 
   useEffect(() => {
-    localStorage.setItem('techops_operator', operatorName);
+    safeSetStorage('techops_operator', operatorName);
   }, [operatorName]);
 
   // SLA clock trigger: re-render every 30 seconds to keep live SLA timer fresh
@@ -531,6 +560,7 @@ export default function App() {
           }}
           onSaveTicket={handleSaveTicket}
           assets={assets}
+          operatorName={operatorName}
           onConsultAI={(t) => {
             setFocusedTicket(t);
             setFocusedAsset(null);

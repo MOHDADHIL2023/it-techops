@@ -28,7 +28,7 @@ interface AuditReportViewProps {
 export const AuditReportView: React.FC<AuditReportViewProps> = ({
   incidents,
   assets,
-  operatorName = 'Alex Rivera',
+  operatorName = 'Adil Hossain',
   onClose,
 }) => {
   const [downloadSuccess, setDownloadSuccess] = useState(false);

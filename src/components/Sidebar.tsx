@@ -20,7 +20,7 @@ import {
   X,
   MapPin,
   User,
-  UserCheck
+  Mail
 } from 'lucide-react';
 import { ITTechOpsLogo } from './ITTechOpsLogo';
 
@@ -59,6 +59,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [isEditingOperator, setIsEditingOperator] = useState(false);
   const [tempOperatorName, setTempOperatorName] = useState(operatorName);
+
+  const getInitials = (name: string) => {
+    const parts = (name || 'AH').trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    }
+    return (name.slice(0, 2) || 'AH').toUpperCase();
+  };
 
   // Live Dubai Time (Gulf Standard Time, UTC+4)
   const [dubaiTime, setDubaiTime] = useState<string>(() => {
@@ -279,43 +287,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Operator & Shift Specialist Footer */}
-      <div className="p-3.5 border-t border-blue-900/60 bg-[#071629] text-xs">
-        <div className="flex items-center justify-between text-blue-300 text-[11px] mb-1.5">
-          <span className="font-mono flex items-center space-x-1">
+      <div className="p-3 border-t border-blue-900/60 bg-[#061426] text-xs">
+        <div className="flex items-center justify-between text-blue-300 text-[10px] mb-2 font-mono">
+          <span className="flex items-center space-x-1 text-slate-300">
             <Clock className="w-3 h-3 text-emerald-400" />
             <span>GST {dubaiTime} (UTC+4)</span>
           </span>
-          <span className="px-1.5 py-0.2 bg-blue-900 text-[9px] font-mono text-emerald-300 font-bold">HUB: DUBAI UAE</span>
+          <span className="px-1.5 py-0.5 bg-blue-900/80 border border-blue-700/60 text-[9px] text-emerald-300 font-bold">
+            HUB: DUBAI UAE
+          </span>
         </div>
 
+        {/* User Card: Duty IT Support Specialist */}
         <div className="pt-2 border-t border-blue-900/40">
-          <div className="flex items-center space-x-2.5">
-            {/* Duty Specialist User Icon Avatar */}
-            <div className="relative flex-shrink-0">
-              <div 
-                className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-emerald-500 border border-blue-300/40 flex items-center justify-center text-white font-bold text-xs shadow-sm"
-                title="Duty IT Support Specialist"
-              >
-                {operatorName
-                  .split(' ')
-                  .filter(Boolean)
-                  .map(n => n[0])
-                  .slice(0, 2)
-                  .join('')
-                  .toUpperCase() || 'AH'}
+          <div className="flex items-start space-x-2.5">
+            {/* User Icon Avatar */}
+            <div className="relative flex-shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 border border-blue-400/80 flex items-center justify-center text-white font-bold text-xs shadow-xs">
+                {getInitials(operatorName)}
               </div>
-              {/* Online Green Indicator Dot */}
-              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#071629] animate-pulse"></span>
+              <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[#061426]" title="Duty Status: Active On-Duty" />
             </div>
 
+            {/* Specialist Details */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-blue-400 font-semibold uppercase tracking-wider">Duty Specialist</span>
-                <span className="px-1.5 py-0.2 bg-emerald-900/70 border border-emerald-500/50 text-emerald-300 text-[9px] font-bold rounded-xs">
-                  ON-DUTY
+                <span className="text-[9px] font-bold uppercase tracking-wider text-blue-300">
+                  Duty IT Support Specialist
                 </span>
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               </div>
-              
+
               {isEditingOperator ? (
                 <div className="flex items-center space-x-1 mt-1">
                   <input
@@ -332,7 +334,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     onClick={handleSaveOperator}
                     className="p-1 bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer"
-                    title="Save Specialist Name"
+                    title="Save Operator Name"
                   >
                     <Check className="w-3 h-3" />
                   </button>
@@ -343,14 +345,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     setTempOperatorName(operatorName);
                     setIsEditingOperator(true);
                   }}
-                  className="flex items-center justify-between mt-0.5 text-white cursor-pointer hover:text-emerald-300 group"
-                  title="Click to edit specialist name"
+                  className="flex items-center justify-between text-white cursor-pointer hover:text-emerald-300 group mt-0.5"
+                  title="Click to edit duty specialist name"
                 >
-                  <span className="font-bold truncate text-xs group-hover:underline">{operatorName}</span>
-                  <Edit2 className="w-3 h-3 text-blue-400 group-hover:text-emerald-300 opacity-70 group-hover:opacity-100 flex-shrink-0 ml-1" />
+                  <span className="font-bold truncate text-xs group-hover:underline text-slate-100">{operatorName}</span>
+                  <Edit2 className="w-2.5 h-2.5 text-blue-400 group-hover:text-emerald-300 opacity-70 group-hover:opacity-100 flex-shrink-0 ml-1" />
                 </div>
               )}
-              <div className="text-[10px] text-blue-300/80 truncate font-medium">Duty IT Support Specialist</div>
+
+              <div className="text-[10px] text-slate-400 truncate mt-0.5 font-mono">
+                adil2030hossain@gmail.com
+              </div>
             </div>
           </div>
         </div>
